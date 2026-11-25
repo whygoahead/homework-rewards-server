@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>教师登录 · 学生作业登记</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="auth-wrap">
+    <form class="card auth-card" id="login-form">
+      <h1>学生作业登记</h1>
+      <p class="muted">请使用教师口令登录。学生名单和记录仅登录后可见。</p>
+      <label for="password">教师口令</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required autofocus>
+      <button class="btn primary" id="login-button" type="submit">登录</button>
+      <div id="login-status" class="notice hidden" role="alert"></div>
+    </form>
+  </main>
+  <script type="module" src="/login.mjs"></script>
+</body>
+</html>

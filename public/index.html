@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学生作业登记 · 积分抽卡工具</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-line">
+    <div>
+      <h1>学生作业登记 · 积分抽卡工具</h1>
+      <p>标记未交 / 二次批改 / 特别好，未标记即合格；合格累计积分，满 10 分抽电子收藏卡或体验特权一次。数据保存在服务端。</p>
+    </div>
+    <button class="btn" id="logout-button" type="button">退出登录</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="app-status" class="notice" role="status">正在加载服务端数据…</div>
+  <main id="app-main" class="hidden">
+    <div class="tabs">
+      <button id="tab-register" class="active">快速登记</button>
+      <button id="tab-points">积分抽卡</button>
+      <button id="tab-follow">待跟进</button>
+      <button id="tab-report">统计清单</button>
+      <div class="cls-switch">
+        <button id="cls-701" class="active">701班</button>
+        <button id="cls-702">702班</button>
+      </div>
+    </div>
+
+    <section id="view-register">
+      <div class="card">
+        <div class="row">
+          <label for="reg-date">日期</label><input type="date" id="reg-date">
+          <label for="reg-assign">作业内容</label><input type="text" id="reg-assign" maxlength="200" placeholder="如：第X课《...》抄写 / 练习册 P..">
+          <button class="btn primary" id="save-register">保存本次登记</button>
+          <span class="muted" id="reg-tip"></span>
+        </div>
+        <div class="status-bar">
+          <span class="hint">先选类型，再点姓名；未标记视为合格。再点一次可取消。</span>
+          <button class="st-btn s-red" id="btn-miss">未交</button>
+          <button class="st-btn s-amber" id="btn-redo">二次批改</button>
+          <button class="st-btn s-purple" id="btn-star">特别好 +2</button>
+        </div>
+        <div class="grid" id="reg-grid"></div>
+      </div>
+    </section>
+
+    <section id="view-points" class="hidden">
+      <div class="card">
+        <div class="row">
+          <h3 style="flex:1">积分榜单（当前班级）</h3>
+          <span class="muted">规则：合格 1 分/次；特别好额外 +2；未交、二次批改本次不计分；满 10 分抽卡一次。</span>
+        </div>
+        <div id="rank-list"></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:8px">收藏卡系列与体验特权</h3>
+        <p class="muted" style="margin-bottom:8px">五套收藏卡分 R / SR / SSR / UR 四种稀有度；另有课堂体验特权券随机掉落。</p>
+        <div class="series-grid" id="series-list"></div>
+      </div>
+    </section>
+
+    <section id="view-follow" class="hidden">
+      <div class="card"><h3 style="margin-bottom:10px">待二次批改</h3><div id="follow-redo"></div></div>
+      <div class="card"><h3 style="margin-bottom:10px">未交作业提醒</h3><div id="follow-miss"></div></div>
+    </section>
+
+    <section id="view-report" class="hidden">
+      <div class="card">
+        <div class="row">
+          <label for="rep-from">起始</label><input type="date" id="rep-from">
+          <label for="rep-to">截止</label><input type="date" id="rep-to">
+          <button class="btn primary" id="generate-report">生成清单</button>
+          <button class="btn blue" id="export-csv">导出 CSV</button>
+        </div>
+        <div class="stat-grid" id="rep-stats"></div>
+      </div>
+      <div class="card table-wrap">
+        <h3 style="margin-bottom:10px">学生个人汇总</h3>
+        <table>
+          <thead><tr><th>班级</th><th>姓名</th><th>作业场次</th><th>合格</th><th>未交</th><th>二次批改</th><th>特别好</th><th>积分</th><th>已抽卡</th><th>备注</th></tr></thead>
+          <tbody id="rep-body"></tbody>
+        </table>
+      </div>
+      <div class="card table-wrap">
+        <h3 style="margin-bottom:10px">按作业明细</h3>
+        <table>
+          <thead><tr><th>日期</th><th>作业内容</th><th>班级</th><th>应交</th><th>已交</th><th>未交</th><th>二次批改</th><th>特别好</th><th>提交率</th><th>待跟进名单</th></tr></thead>
+          <tbody id="rep-assign"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modal-mask" class="modal-mask hidden">
+  <div class="modal">
+    <h3 id="modal-student"></h3>
+    <div class="box-stage">
+      <div class="gift-wrap" id="gift-wrap" role="button" tabindex="0" aria-label="拆开奖励盒子">
+        <div class="orbit"><i></i><i></i><i></i></div>
+        <div class="burst" id="burst"></div>
+        <div class="gift-box" id="gift-box"><div class="bow"></div><div class="lid"></div><div class="body"></div><div class="ribbon"></div></div>
+        <div class="gift-shadow"></div>
+      </div>
+      <div class="card-stage" id="card-stage">
+        <div class="card-face card-back"><div class="big">?</div><div>点击盒子拆开</div></div>
+        <div class="card-face card-front" id="card-front"></div>
+      </div>
+    </div>
+    <div id="draw-status" class="muted" role="status"></div>
+    <div class="row" style="justify-content:center;margin-top:10px">
+      <button class="btn primary hidden" id="modal-close">收好卡片</button>
+    </div>
+  </div>
+</div>
+<script type="module" src="/app.mjs"></script>
+</body>
+</html>

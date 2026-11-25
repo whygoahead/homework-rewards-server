@@ -1,0 +1,25 @@
+{
+  "name": "homework-rewards-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs",
+    "test": "node --test test/*.test.mjs",
+    "hash-password": "node scripts/hash-password.mjs",
+    "import-legacy": "node scripts/import-legacy.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "cookie-session": "^2.1.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.4"
+  }
+}
